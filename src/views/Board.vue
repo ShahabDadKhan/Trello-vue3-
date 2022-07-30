@@ -1,54 +1,77 @@
 <template>
   <div class="board">
-
-<!-- Board start here -->
+    <!-- Board start here -->
     <div class="flex flex-row items-start">
-      <div class="column" v-for="(column, $columnIndex) of board.columns" :key="$columnIndex">
+      <div
+        class="column"
+        v-for="(column, $columnIndex) of board.columns"
+        :key="$columnIndex"
+      >
         <div class="flex items-center mb-2 font-bold">
-          {{column.name}}
+          {{ column.name }}
         </div>
         <div class="list-reset">
-          <div class="task" v-for="(task, $taskIndex) of column.tasks" :key="$taskIndex" @click="goToTask(task)">
+          <div
+            class="task"
+            v-for="(task, $taskIndex) of column.tasks"
+            :key="$taskIndex"
+            @click="goToTask(task)"
+          >
             <span class="w-full flex-no-shrink font-bold">
-            {{task.name }}
+              {{ task.name }}
             </span>
-            <p v-if="task.description" class="w-full flex-no-shrink mt-1 text-sm">
-              {{task.description}}
+            <p
+              v-if="task.description"
+              class="w-full flex-no-shrink mt-1 text-sm"
+            >
+              {{ task.description }}
             </p>
           </div>
+          <input
+            type="text"
+            class="block p-2 w-full bg-transparent"
+            placeholder="+ Enter new task"
+            @keyup.enter="createTask($event, column.tasks)"
+          />
         </div>
       </div>
     </div>
-<!-- Board ends here -->
+    <!-- Board ends here -->
 
-<!-- Modal starts here -->
-<div class="task-bg" v-if="isTaskOpen" @click.self="closeTask">
-  <router-view/>
-</div>
-<!-- Modal ends here -->
-
+    <!-- Modal starts here -->
+    <div class="task-bg" v-if="isTaskOpen" @click.self="closeTask">
+      <router-view />
+    </div>
+    <!-- Modal ends here -->
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
   computed: {
-    ...mapState(['board']),
-    isTaskOpen () {
-      return this.$route.name === 'task'
+    ...mapState(["board"]),
+    isTaskOpen() {
+      return this.$route.name === "task";
     }
   },
   methods: {
-    closeTask () {
-      this.$router.push({ name: 'board' })
+    createTask(e, tasks) {
+      this.$store.commit("CREATE_TASK", {
+        tasks,
+        name: e.target.value
+      });
+      e.target.value = "";
     },
-    goToTask (task) {
-      this.$router.push({ name: 'task', params: { id: task.id } })
+    closeTask() {
+      this.$router.push({ name: "board" });
+    },
+    goToTask(task) {
+      this.$router.push({ name: "task", params: { id: task.id } });
     }
   }
-}
+};
 </script>
 
 <style lang="css">
